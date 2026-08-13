@@ -4,17 +4,20 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
 import { fetchConToken } from "@/lib/api/client";
+import { comprimirImagen } from "@/lib/utils/imagen";
 import styles from "./EditarPerfil.module.css";
 
 export default function EditarPerfil() {
   const router = useRouter();
   const [form, setForm] = useState(null);
   const [email, setEmail] = useState("");
+  const [userId, setUserId] = useState(null);
+  const [avatarUrl, setAvatarUrl] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [mensaje, setMensaje] = useState("");
 
-  // Carga el perfil real (nombre/apellido) desde /api/auth/perfil.
+  // Carga el perfil (nombre/apellido) desde la API y la foto desde localStorage.
   useEffect(() => {
     let cancelled = false;
 
@@ -23,7 +26,8 @@ export default function EditarPerfil() {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) throw new Error("No hay sesión activa.");
 
-        // El perfil siempre es el de la sesión: el endpoint ya no acepta ?id=.
+        setUserId(user.id);
+
         const res = await fetchConToken("/api/auth/perfil");
         const body = await res.json().catch(() => null);
 
@@ -35,6 +39,13 @@ export default function EditarPerfil() {
           nombre: body.profile.nombre || "",
           apellido: body.profile.apellido || "",
         });
+
+        // Obtener la foto de perfil almacenada en el navegador (localStorage)
+        if (typeof window !== "undefined") {
+          const storedAvatar = localStorage.getItem(`user_avatar_${user.id}`);
+          setAvatarUrl(storedAvatar || null);
+        }
+
         setEmail(user.email || "");
       } catch (err) {
         if (!cancelled) {
@@ -55,6 +66,41 @@ export default function EditarPerfil() {
   function handleChange(event) {
     const { name, value } = event.target;
     setForm((prev) => ({ ...prev, [name]: value }));
+  }
+
+  async function handleAvatarSelect(event) {
+    const selectedFile = event.target.files?.[0];
+    if (!selectedFile) return;
+
+    if (!["image/jpeg", "image/png", "image/jpg"].includes(selectedFile.type)) {
+      setMensaje("❌ Selecciona una imagen en formato JPG o PNG.");
+      return;
+    }
+
+    try {
+      const comprimida = await comprimirImagen(selectedFile, { maxDimension: 400, calidad: 0.85 });
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const dataUrl = reader.result;
+        setAvatarUrl(dataUrl);
+        if (userId && typeof window !== "undefined") {
+          localStorage.setItem(`user_avatar_${userId}`, dataUrl);
+          window.dispatchEvent(new CustomEvent("profileUpdated"));
+        }
+      };
+      reader.readAsDataURL(comprimida);
+    } catch (err) {
+      console.error("Error al procesar avatar:", err);
+      setMensaje("❌ No se pudo cargar la imagen seleccionada.");
+    }
+  }
+
+  function handleDeleteAvatar() {
+    setAvatarUrl(null);
+    if (userId && typeof window !== "undefined") {
+      localStorage.removeItem(`user_avatar_${userId}`);
+      window.dispatchEvent(new CustomEvent("profileUpdated"));
+    }
   }
 
   async function handleSubmit(event) {
@@ -91,6 +137,9 @@ export default function EditarPerfil() {
       }
 
       setMensaje("✅ Perfil actualizado correctamente.");
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("profileUpdated"));
+      }
     } catch (err) {
       console.error("Error al actualizar perfil:", err);
       setMensaje("❌ " + (err.message || "No se pudo actualizar el perfil."));
@@ -108,6 +157,57 @@ export default function EditarPerfil() {
       <p className={styles.subtitle}>Actualiza tu información personal</p>
 
       <form className={styles.card} onSubmit={handleSubmit}>
+        {/* FOTO DE PERFIL */}
+        <div className={styles.avatarSection}>
+          <div className={styles.avatarWrapper}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={avatarUrl || "/images/default_avatar.jpg"}
+              alt="Foto de perfil"
+              className={styles.avatarImage}
+            />
+          </div>
+
+          <div className={styles.avatarDetails}>
+            <h2 className={styles.avatarTitle}>Foto de Perfil</h2>
+            <p className={styles.avatarHint}>
+              Recomendamos una imagen cuadrada de al menos 400×400px. Formatos aceptados: JPG, PNG.
+            </p>
+
+            <div className={styles.avatarActions}>
+              <button
+                type="button"
+                className={styles.changeBtn}
+                onClick={() => document.getElementById("avatarFileInput").click()}
+                disabled={saving}
+              >
+                Cambiar Imagen
+              </button>
+
+              {avatarUrl && (
+                <button
+                  type="button"
+                  className={styles.deleteBtn}
+                  onClick={handleDeleteAvatar}
+                  disabled={saving}
+                >
+                  Eliminar
+                </button>
+              )}
+
+              <input
+                id="avatarFileInput"
+                type="file"
+                accept="image/jpeg,image/png,image/jpg"
+                style={{ display: "none" }}
+                onChange={handleAvatarSelect}
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className={styles.divider} />
+
         <div className={styles.grid}>
           <div className={styles.field}>
             <label htmlFor="nombre">Nombre</label>

@@ -146,45 +146,6 @@ export default function EvidenceReview() {
         </div>
       </div>
 
-      {submission.status === "pendiente" && (
-        <section className={styles.actionCard}>
-          <h2>Revisión de evidencia</h2>
-
-          <label className={styles.detailLabel} htmlFor="motivoRevision">
-            Motivo (obligatorio al rechazar)
-          </label>
-          <textarea
-            id="motivoRevision"
-            value={motivo}
-            onChange={(event) => setMotivo(event.target.value)}
-            placeholder="Escribe aquí el motivo de tu decisión..."
-            rows={3}
-          />
-
-          <div className={styles.actionButtons}>
-            <button
-              type="button"
-              className={styles.approveButton}
-              disabled={Boolean(enviando)}
-              onClick={() => revisar("aprobado")}
-            >
-              {enviando === "aprobado" ? "Aprobando..." : "✓ Aprobar"}
-            </button>
-
-            <button
-              type="button"
-              className={styles.rejectButton}
-              disabled={Boolean(enviando)}
-              onClick={() => revisar("rechazado")}
-            >
-              {enviando === "rechazado" ? "Rechazando..." : "✕ Rechazar"}
-            </button>
-          </div>
-
-          {aviso && <p className={styles.reviewAviso}>{aviso}</p>}
-        </section>
-      )}
-
       <div className={styles.contentGrid}>
         <article className={styles.viewerCard}>
           <div className={styles.viewerHeader}>
@@ -233,6 +194,45 @@ export default function EvidenceReview() {
               <p>{submission.description}</p>
             </div>
           </article>
+
+          {submission.status === "pendiente" && (
+            <section className={styles.actionCard}>
+              <h2>Revisión de evidencia</h2>
+
+              <label className={styles.detailLabel} htmlFor="motivoRevision">
+                Motivo (obligatorio al rechazar)
+              </label>
+              <textarea
+                id="motivoRevision"
+                value={motivo}
+                onChange={(event) => setMotivo(event.target.value)}
+                placeholder="Escribe aquí el motivo de tu decisión..."
+                rows={3}
+              />
+
+              <div className={styles.actionButtons}>
+                <button
+                  type="button"
+                  className={styles.approveButton}
+                  disabled={Boolean(enviando)}
+                  onClick={() => revisar("aprobado")}
+                >
+                  {enviando === "aprobado" ? "Aprobando..." : "✓ Aprobar"}
+                </button>
+
+                <button
+                  type="button"
+                  className={styles.rejectButton}
+                  disabled={Boolean(enviando)}
+                  onClick={() => revisar("rechazado")}
+                >
+                  {enviando === "rechazado" ? "Rechazando..." : "✕ Rechazar"}
+                </button>
+              </div>
+
+              {aviso && <p className={styles.reviewAviso}>{aviso}</p>}
+            </section>
+          )}
         </aside>
       </div>
     </div>

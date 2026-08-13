@@ -22,44 +22,92 @@
   border: 1px solid #e5e7eb;
 }
 
-/* FOTO */
-.sectionTop {
+/* FOTO DE PERFIL */
+.avatarSection {
   display: flex;
-  gap: 20px;
   align-items: center;
+  gap: 24px;
+  margin-bottom: 24px;
+  padding: 20px;
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 12px;
 }
 
-.avatar {
-  width: 80px;
-  height: 80px;
+.avatarWrapper {
+  width: 90px;
+  height: 90px;
   border-radius: 50%;
-}
-
-.desc {
-  font-size: 13px;
-  color: #6b7280;
-  margin: 5px 0 10px;
-}
-
-.photoActions {
+  border: 3px solid #ffffff;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+  background: #e2e8f0;
   display: flex;
-  gap: 15px;
   align-items: center;
+  justify-content: center;
 }
 
-.btnSecondary {
-  background: #e5e7eb;
-  padding: 8px 14px;
+.avatarImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatarDetails {
+  flex: 1;
+}
+
+.avatarTitle {
+  margin: 0 0 4px;
+  font-size: 17px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.avatarHint {
+  margin: 0 0 14px;
+  font-size: 13px;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+.avatarActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.changeBtn {
+  background: #f0f4f9;
+  color: #2563eb;
+  border: 1px solid #cbd5e1;
+  padding: 8px 16px;
   border-radius: 8px;
-  cursor: pointer;
   font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.delete {
-  color: red;
-  background: none;
+.changeBtn:hover {
+  background: #e2e8f0;
+}
+
+.deleteBtn {
+  background: transparent;
+  color: #dc2626;
   border: none;
+  padding: 8px 12px;
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.deleteBtn:hover {
+  opacity: 0.8;
+  text-decoration: underline;
 }
 
 /* DIVIDER */

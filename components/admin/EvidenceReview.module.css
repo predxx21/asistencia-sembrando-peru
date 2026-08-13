@@ -204,7 +204,7 @@
 .sidePanel {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
 }
 
 .detailsCard,
@@ -217,7 +217,7 @@
 
 .detailsCard h2,
 .actionCard h2 {
-  margin: 0 0 20px;
+  margin: 0 0 16px;
   font-size: 17px;
   color: #26384b;
 }
@@ -281,7 +281,7 @@
 .actionCard textarea {
   width: 100%;
   resize: vertical;
-  min-height: 120px;
+  min-height: 90px;
   border: 1px solid #dfe4ea;
   border-radius: 8px;
   padding: 12px;
@@ -289,27 +289,34 @@
   font-size: 14px;
   outline: none;
   margin-top: 6px;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
 }
 
 .actionCard textarea:focus {
   border-color: #197343;
+  box-shadow: 0 0 0 3px rgba(25, 115, 67, 0.1);
 }
 
 .actionButtons {
   display: flex;
   gap: 10px;
-  margin-top: 20px;
+  margin-top: 16px;
 }
 
 .approveButton,
 .rejectButton {
   flex: 1;
-  padding: 12px;
+  padding: 11px 14px;
   border-radius: 8px;
   border: 0;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
 }
 
 .approveButton {
@@ -329,11 +336,6 @@
 
 .rejectButton:hover {
   background: #fdecec;
-}
-
-.actionCard + .contentGrid,
-.actionCard {
-  margin-bottom: 20px;
 }
 
 .reviewAviso {
