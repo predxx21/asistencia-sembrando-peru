@@ -3,6 +3,8 @@ import { getUserFromRequest } from '@/lib/supabase/authServer';
 import { supabaseAdmin } from '@/lib/supabase/admin';
 import { getPerfilByUserId } from '@/lib/db/perfil';
 import { obtenerRegistroPorId, actualizarEstadoRegistro } from '@/lib/db/registro';
+import { crearNotificacion } from '@/lib/db/notificacion';
+import { formatFechaEs } from '@/lib/utils/fecha';
 import { getCached, setCached, invalidateCache } from '@/lib/cache';
 import { esEnteroPositivo, esEvidenciaPropia } from '@/lib/utils/validar';
 
@@ -165,6 +167,26 @@ export async function PATCH(request, context) {
       { error: 'No se pudo actualizar el registro.' },
       { status: 500 }
     );
+  }
+
+  // Crear notificación para el voluntario dueño del registro
+  try {
+    const titulo = estado === 'aprobado' ? '✅ Evidencia Aprobada' : '❌ Evidencia Rechazada';
+    const fechaStr = formatFechaEs(registroActual.fecha);
+    const horasTxt = `${registroActual.horas} hrs`;
+    const mensaje = estado === 'aprobado'
+      ? `Tu actividad de ${horasTxt} (${fechaStr}) ha sido aprobada.`
+      : `Tu actividad de ${horasTxt} (${fechaStr}) fue rechazada: "${comentarioRevision || 'Sin observaciones'}"`;
+
+    await crearNotificacion({
+      profileId: registroActual.profileId,
+      registroId: registroActual.id,
+      titulo,
+      mensaje,
+      tipo: estado,
+    });
+  } catch (errNotif) {
+    console.error('Error al notificar al voluntario:', errNotif);
   }
 
   // Aprobar/rechazar cambia el listado pendiente y las estadísticas.

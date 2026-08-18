@@ -34,8 +34,9 @@ model Profile {
   rol           Rol                @default(voluntario)
   fechaCreacion DateTime           @default(now())
   
-  registros     RegistroAsistencia[]
+  registros          RegistroAsistencia[]
   registrosRevisados RegistroAsistencia[] @relation("revisor")
+  notificaciones     Notificacion[]
   
   @@map("profiles")
 }
@@ -65,4 +66,21 @@ model RegistroAsistencia {
   @@index([fechaRevision])
   @@index([estado, fecha])
   @@map("registroasistencia")
+}
+
+model Notificacion {
+  id          Int      @id @default(autoincrement())
+  profileId   String
+  profile     Profile  @relation(fields: [profileId], references: [id])
+  
+  registroId  Int?
+  titulo      String
+  mensaje     String
+  tipo        String   // "aprobado", "rechazado"
+  leida       Boolean  @default(false)
+  fecha       DateTime @default(now())
+
+  @@index([profileId])
+  @@index([leida])
+  @@map("notificaciones")
 }
