@@ -59,7 +59,7 @@ export default function RecuperarScreen() {
             <form onSubmit={handleSubmit}>
               <label htmlFor="email">Correo electrónico</label>
               <div className="input-wrap">
-                <span className="input-icon" aria-hidden="true">���</span>
+                <span className="input-icon" aria-hidden="true">✉</span>
                 <input
                   id="email"
                   type="email"
